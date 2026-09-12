@@ -8,8 +8,13 @@ import (
 	mw "github.com/garrychrstn/go-v1/internal/handler/middleware"
 )
 
+// Registrar mounts a handler's routes on a router.
+type Registrar interface {
+	Register(chi.Router)
+}
+
 // NewRouter assembles the full HTTP stack: middleware chain + routes.
-func NewRouter(users *UserHandler, corsOrigins []string) http.Handler {
+func NewRouter(handlers []Registrar, corsOrigins []string) http.Handler {
 	r := chi.NewRouter()
 
 	r.Use(mw.Recoverer)
@@ -19,7 +24,9 @@ func NewRouter(users *UserHandler, corsOrigins []string) http.Handler {
 
 	r.Get("/health", Health)
 
-	users.Register(r)
+	for _, h := range handlers {
+		h.Register(r)
+	}
 
 	return r
 }

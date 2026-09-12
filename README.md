@@ -72,6 +72,8 @@ curl localhost:8080/users/1
 
 - The `users` entity is a sample that demonstrates the full chain end-to-end.
   Replace it (table, queries, repository, handler) with your real domain.
+- Handlers implement the `handler.Registrar` interface (`Register(chi.Router)`);
+  `NewRouter` mounts any number of them via `handlers := []handler.Registrar{...}`.
 - `internal/repository/db` is sqlc output — regenerate after editing queries,
   and commit it like any other code.
 - `internal/controller` is not part of the v1 flow (handlers call repositories

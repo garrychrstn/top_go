@@ -83,12 +83,14 @@ func main() {
 	}
 
 	// 3. Init repository, 4. init handler (inject repo).
-	users := handler.NewUserHandler(repository.NewUserRepository(pool))
+	handlers := []handler.Registrar{
+		handler.NewUserHandler(repository.NewUserRepository(pool)),
+	}
 
 	// 5. Mount routes + middleware, 6. start server.
 	srv := &http.Server{
 		Addr:              ":" + cfg.Port,
-		Handler:           handler.NewRouter(users, cfg.CORSOrigins),
+		Handler:           handler.NewRouter(handlers, cfg.CORSOrigins),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      15 * time.Second,
