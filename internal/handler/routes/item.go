@@ -30,8 +30,8 @@ func (h *ItemHandler) Register(r chi.Router) {
 }
 
 type ItemRequest struct {
-	Name  string  `json:"name"`
-	Price float64 `json:"price"`
+	Name  string `json:"name"`
+	Price string `json:"price"`
 }
 
 func (h *ItemHandler) List(w http.ResponseWriter, r *http.Request) {
