@@ -8,6 +8,7 @@ package db
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -33,12 +34,94 @@ func (q *Queries) CustomerCreate(ctx context.Context, arg CustomerCreateParams) 
 	return i, err
 }
 
+const customerDelete = `-- name: CustomerDelete :exec
+DELETE FROM CUSTOMERS WHERE id = $1
+`
+
+func (q *Queries) CustomerDelete(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, customerDelete, id)
+	return err
+}
+
+const customerGetByID = `-- name: CustomerGetByID :one
+SELECT id, name, phone_number, address FROM CUSTOMERS WHERE id = $1
+`
+
+func (q *Queries) CustomerGetByID(ctx context.Context, id uuid.UUID) (Customer, error) {
+	row := q.db.QueryRow(ctx, customerGetByID, id)
+	var i Customer
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.PhoneNumber,
+		&i.Address,
+	)
+	return i, err
+}
+
 const customerGetByName = `-- name: CustomerGetByName :one
 SELECT id, name, phone_number, address FROM CUSTOMERS WHERE name ILIKE $1
 `
 
 func (q *Queries) CustomerGetByName(ctx context.Context, name string) (Customer, error) {
 	row := q.db.QueryRow(ctx, customerGetByName, name)
+	var i Customer
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.PhoneNumber,
+		&i.Address,
+	)
+	return i, err
+}
+
+const customerList = `-- name: CustomerList :many
+SELECT id, name, phone_number, address FROM CUSTOMERS
+`
+
+func (q *Queries) CustomerList(ctx context.Context) ([]Customer, error) {
+	rows, err := q.db.Query(ctx, customerList)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Customer{}
+	for rows.Next() {
+		var i Customer
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.PhoneNumber,
+			&i.Address,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const customerUpdate = `-- name: CustomerUpdate :one
+UPDATE CUSTOMERS SET name = $1, phone_number = $2, address = $3 WHERE id = $4 returning id, name, phone_number, address
+`
+
+type CustomerUpdateParams struct {
+	Name        string      `json:"name"`
+	PhoneNumber string      `json:"phone_number"`
+	Address     pgtype.Text `json:"address"`
+	ID          uuid.UUID   `json:"id"`
+}
+
+func (q *Queries) CustomerUpdate(ctx context.Context, arg CustomerUpdateParams) (Customer, error) {
+	row := q.db.QueryRow(ctx, customerUpdate,
+		arg.Name,
+		arg.PhoneNumber,
+		arg.Address,
+		arg.ID,
+	)
 	var i Customer
 	err := row.Scan(
 		&i.ID,

@@ -6,3 +6,6 @@ SELECT * FROM items;
 
 -- name: ItemUpdate :one
 UPDATE items SET name = $1, price = $2 WHERE id = $3 RETURNING *;
+
+-- name: ItemDelete :exec
+DELETE FROM items WHERE id = $1;
