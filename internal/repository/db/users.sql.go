@@ -35,3 +35,27 @@ func (q *Queries) GetUserByEmail(ctx context.Context, username string) (User, er
 	err := row.Scan(&i.ID, &i.Username, &i.Password)
 	return i, err
 }
+
+const lisstUser = `-- name: LisstUser :many
+SELECT id, username, password FROM USERS
+`
+
+func (q *Queries) LisstUser(ctx context.Context) ([]User, error) {
+	rows, err := q.db.Query(ctx, lisstUser)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []User{}
+	for rows.Next() {
+		var i User
+		if err := rows.Scan(&i.ID, &i.Username, &i.Password); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
