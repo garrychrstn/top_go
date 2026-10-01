@@ -22,7 +22,6 @@ import (
 
 	"github.com/garrychrstn/top-go/internal/database"
 	"github.com/garrychrstn/top-go/internal/handler"
-	"github.com/garrychrstn/top-go/internal/repository"
 	"github.com/garrychrstn/top-go/internal/util"
 )
 
@@ -83,9 +82,7 @@ func main() {
 	}
 
 	// 3. Init repository, 4. init handler (inject repo).
-	handlers := []handler.Registrar{
-		handler.NewUserHandler(repository.NewUserRepository(pool)),
-	}
+	handlers := []handler.Registrar{}
 
 	// 5. Mount routes + middleware, 6. start server.
 	srv := &http.Server{
