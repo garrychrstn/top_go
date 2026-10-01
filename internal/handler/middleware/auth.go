@@ -1,31 +1,52 @@
 package middleware
 
 import (
-	"crypto/subtle"
+	"context"
 	"net/http"
 	"strings"
 
 	"github.com/garrychrstn/top-go/internal/util"
 )
 
-// RequireBearerToken guards routes with a static bearer token supplied via
-// config (e.g. AUTH_BEARER_TOKEN). An empty expected value disables the check
-// so unconfigured environments still work in local dev.
-func RequireBearerToken(expected string) func(http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if expected == "" {
-				next.ServeHTTP(w, r)
-				return
-			}
+type contextKey int
 
-			auth := r.Header.Get("Authorization")
-			token, ok := strings.CutPrefix(auth, "Bearer ")
-			if !ok || subtle.ConstantTimeCompare([]byte(token), []byte(expected)) != 1 {
-				util.WriteError(w, http.StatusUnauthorized, "unauthorized")
-				return
+const jwtClaimKey contextKey = iota
+
+// JWTAuth reads the token from the "token" cookie or Authorization header,
+// parses it, and attaches the JWTClaim to the request context.
+func JWTAuth(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var tokenStr string
+
+		if cookie, err := r.Cookie("token"); err == nil {
+			tokenStr = cookie.Value
+		}
+
+		if tokenStr == "" {
+			authHeader := r.Header.Get("Authorization")
+			if t, found := strings.CutPrefix(authHeader, "Bearer "); found {
+				tokenStr = strings.TrimSpace(t)
 			}
-			next.ServeHTTP(w, r)
-		})
-	}
+		}
+
+		if tokenStr == "" {
+			util.WriteError(w, http.StatusUnauthorized, "missing token")
+			return
+		}
+
+		claims, err := util.JWTParse(tokenStr)
+		if err != nil {
+			util.WriteError(w, http.StatusUnauthorized, "invalid or expired token")
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), jwtClaimKey, claims)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
+}
+
+// GetJWTClaim retrieves the JWTClaim from the context.
+func GetJWTClaim(ctx context.Context) *util.JWTClaim {
+	claims, _ := ctx.Value(jwtClaimKey).(*util.JWTClaim)
+	return claims
 }

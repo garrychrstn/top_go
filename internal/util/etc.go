@@ -31,15 +31,14 @@ func Ran(n int) string {
 }
 
 type JWTClaim struct {
-	UserID  uuid.UUID `json:"user_id"`
-	AppKey  string    `json:"app_key"`
-	IsAdmin bool      `json:"is_admin"`
+	UserID   uuid.UUID `json:"user_id"`
+	Username string    `json:"username"`
 	jwt.RegisteredClaims
 }
 
-// JWTGenerate signs a 24-hour HS256 JWT for the given user ID using the
+// JWTGenerate signs a 24-hour HS256 JWT for the given user ID and username using the
 // AUTH_BEARER_TOKEN env var as the secret.
-func JWTGenerate(userID uuid.UUID, appKey string, isAdmin bool) (string, error) {
+func JWTGenerate(userID uuid.UUID, username string) (string, error) {
 	secret := os.Getenv("AUTH_BEARER_TOKEN")
 	if secret == "" {
 		return "", errors.New("AUTH_BEARER_TOKEN is not set")
@@ -47,9 +46,8 @@ func JWTGenerate(userID uuid.UUID, appKey string, isAdmin bool) (string, error) 
 
 	now := time.Now()
 	claims := JWTClaim{
-		UserID:  userID,
-		AppKey:  appKey,
-		IsAdmin: isAdmin,
+		UserID:   userID,
+		Username: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			IssuedAt:  jwt.NewNumericDate(now),
 			ExpiresAt: jwt.NewNumericDate(now.Add(24 * time.Hour)),
@@ -59,7 +57,7 @@ func JWTGenerate(userID uuid.UUID, appKey string, isAdmin bool) (string, error) 
 }
 
 func JWTParse(tokenString string) (*JWTClaim, error) {
-	secret := os.Getenv("JWT_SIGNING_SECRET")
+	secret := os.Getenv("AUTH_BEARER_TOKEN")
 
 	claims := &JWTClaim{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(t *jwt.Token) (interface{}, error) {
