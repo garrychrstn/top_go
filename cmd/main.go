@@ -92,8 +92,16 @@ func main() {
 	authRepo := repository.AuthInitRepo(pool)
 	authHandler := routes.AuthInitHandler(authRepo)
 
+	itemRepo := repository.ItemInitRepo(pool)
+	itemHandler := routes.ItemInitHandler(itemRepo)
+
+	customerRepo := repository.CustomerInitRepo(pool)
+	customerHandler := routes.CustomerInitHandler(customerRepo)
+
 	handlers := []handler.Registrar{
 		authHandler,
+		itemHandler,
+		customerHandler,
 	}
 
 	// 5. Mount routes + middleware, 6. start server.
