@@ -1,8 +1,8 @@
--- name: GetUserByEmail :one
+-- name: UserGetByEmail :one
 SELECT * FROM USERS WHERE username = $1;
 
--- name: CreateUser :one
+-- name: UserCreate :one
 INSERT INTO USERS (username, password) VALUES ($1, $2) returning *;
 
--- name: LisstUser :many
+-- name: UserList :many
 SELECT * FROM USERS;

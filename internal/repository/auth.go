@@ -22,7 +22,6 @@ func AuthInitRepo(pool *pgxpool.Pool) AuthRepository {
 }
 
 func (r *repo) GetUser(ctx context.Context, username string) {
-
 }
 func (r *repo) UpdatePassword(ctx context.Context, id uuid.UUID, password string) {
 
