@@ -11,18 +11,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createCustomer = `-- name: CreateCustomer :one
+const customerCreate = `-- name: CustomerCreate :one
 INSERT INTO CUSTOMERS (name, phone_number, address) VALUES ($1, $2, $3) returning id, name, phone_number, address
 `
 
-type CreateCustomerParams struct {
+type CustomerCreateParams struct {
 	Name        string      `json:"name"`
 	PhoneNumber string      `json:"phone_number"`
 	Address     pgtype.Text `json:"address"`
 }
 
-func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) (Customer, error) {
-	row := q.db.QueryRow(ctx, createCustomer, arg.Name, arg.PhoneNumber, arg.Address)
+func (q *Queries) CustomerCreate(ctx context.Context, arg CustomerCreateParams) (Customer, error) {
+	row := q.db.QueryRow(ctx, customerCreate, arg.Name, arg.PhoneNumber, arg.Address)
 	var i Customer
 	err := row.Scan(
 		&i.ID,
@@ -33,12 +33,12 @@ func (q *Queries) CreateCustomer(ctx context.Context, arg CreateCustomerParams) 
 	return i, err
 }
 
-const getCustomerByName = `-- name: GetCustomerByName :one
+const customerGetByName = `-- name: CustomerGetByName :one
 SELECT id, name, phone_number, address FROM CUSTOMERS WHERE name ILIKE $1
 `
 
-func (q *Queries) GetCustomerByName(ctx context.Context, name string) (Customer, error) {
-	row := q.db.QueryRow(ctx, getCustomerByName, name)
+func (q *Queries) CustomerGetByName(ctx context.Context, name string) (Customer, error) {
+	row := q.db.QueryRow(ctx, customerGetByName, name)
 	var i Customer
 	err := row.Scan(
 		&i.ID,

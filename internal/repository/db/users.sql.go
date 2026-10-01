@@ -9,39 +9,39 @@ import (
 	"context"
 )
 
-const createUser = `-- name: CreateUser :one
+const userCreate = `-- name: UserCreate :one
 INSERT INTO USERS (username, password) VALUES ($1, $2) returning id, username, password
 `
 
-type CreateUserParams struct {
+type UserCreateParams struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Username, arg.Password)
+func (q *Queries) UserCreate(ctx context.Context, arg UserCreateParams) (User, error) {
+	row := q.db.QueryRow(ctx, userCreate, arg.Username, arg.Password)
 	var i User
 	err := row.Scan(&i.ID, &i.Username, &i.Password)
 	return i, err
 }
 
-const getUserByEmail = `-- name: GetUserByEmail :one
+const userGetByEmail = `-- name: UserGetByEmail :one
 SELECT id, username, password FROM USERS WHERE username = $1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRow(ctx, getUserByEmail, username)
+func (q *Queries) UserGetByEmail(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, userGetByEmail, username)
 	var i User
 	err := row.Scan(&i.ID, &i.Username, &i.Password)
 	return i, err
 }
 
-const lisstUser = `-- name: LisstUser :many
+const userList = `-- name: UserList :many
 SELECT id, username, password FROM USERS
 `
 
-func (q *Queries) LisstUser(ctx context.Context) ([]User, error) {
-	rows, err := q.db.Query(ctx, lisstUser)
+func (q *Queries) UserList(ctx context.Context) ([]User, error) {
+	rows, err := q.db.Query(ctx, userList)
 	if err != nil {
 		return nil, err
 	}

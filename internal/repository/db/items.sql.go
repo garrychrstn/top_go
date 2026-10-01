@@ -8,31 +8,32 @@ package db
 import (
 	"context"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const createItem = `-- name: CreateItem :one
+const itemCreate = `-- name: ItemCreate :one
 INSERT INTO items (name, price) VALUES ($1, $2) RETURNING id, name, price
 `
 
-type CreateItemParams struct {
+type ItemCreateParams struct {
 	Name  string         `json:"name"`
 	Price pgtype.Numeric `json:"price"`
 }
 
-func (q *Queries) CreateItem(ctx context.Context, arg CreateItemParams) (Item, error) {
-	row := q.db.QueryRow(ctx, createItem, arg.Name, arg.Price)
+func (q *Queries) ItemCreate(ctx context.Context, arg ItemCreateParams) (Item, error) {
+	row := q.db.QueryRow(ctx, itemCreate, arg.Name, arg.Price)
 	var i Item
 	err := row.Scan(&i.ID, &i.Name, &i.Price)
 	return i, err
 }
 
-const listItems = `-- name: ListItems :many
+const itemList = `-- name: ItemList :many
 SELECT id, name, price FROM items
 `
 
-func (q *Queries) ListItems(ctx context.Context) ([]Item, error) {
-	rows, err := q.db.Query(ctx, listItems)
+func (q *Queries) ItemList(ctx context.Context) ([]Item, error) {
+	rows, err := q.db.Query(ctx, itemList)
 	if err != nil {
 		return nil, err
 	}
@@ -51,18 +52,18 @@ func (q *Queries) ListItems(ctx context.Context) ([]Item, error) {
 	return items, nil
 }
 
-const updateItem = `-- name: UpdateItem :one
+const itemUpdate = `-- name: ItemUpdate :one
 UPDATE items SET name = $1, price = $2 WHERE id = $3 RETURNING id, name, price
 `
 
-type UpdateItemParams struct {
+type ItemUpdateParams struct {
 	Name  string         `json:"name"`
 	Price pgtype.Numeric `json:"price"`
-	ID    pgtype.UUID    `json:"id"`
+	ID    uuid.UUID      `json:"id"`
 }
 
-func (q *Queries) UpdateItem(ctx context.Context, arg UpdateItemParams) (Item, error) {
-	row := q.db.QueryRow(ctx, updateItem, arg.Name, arg.Price, arg.ID)
+func (q *Queries) ItemUpdate(ctx context.Context, arg ItemUpdateParams) (Item, error) {
+	row := q.db.QueryRow(ctx, itemUpdate, arg.Name, arg.Price, arg.ID)
 	var i Item
 	err := row.Scan(&i.ID, &i.Name, &i.Price)
 	return i, err

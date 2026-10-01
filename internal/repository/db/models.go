@@ -7,24 +7,25 @@ package db
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Customer struct {
-	ID          pgtype.UUID `json:"id"`
+	ID          uuid.UUID   `json:"id"`
 	Name        string      `json:"name"`
 	PhoneNumber string      `json:"phone_number"`
 	Address     pgtype.Text `json:"address"`
 }
 
 type Item struct {
-	ID    pgtype.UUID    `json:"id"`
+	ID    uuid.UUID      `json:"id"`
 	Name  string         `json:"name"`
 	Price pgtype.Numeric `json:"price"`
 }
 
 type TxRental struct {
-	ID         pgtype.UUID `json:"id"`
+	ID         uuid.UUID   `json:"id"`
 	UserID     pgtype.UUID `json:"user_id"`
 	CustomerID pgtype.UUID `json:"customer_id"`
 	CreatedAt  time.Time   `json:"created_at"`
@@ -38,7 +39,7 @@ type TxRentalItem struct {
 }
 
 type User struct {
-	ID       pgtype.UUID `json:"id"`
-	Username string      `json:"username"`
-	Password string      `json:"password"`
+	ID       uuid.UUID `json:"id"`
+	Username string    `json:"username"`
+	Password string    `json:"password"`
 }
