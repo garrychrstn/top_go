@@ -2,9 +2,14 @@ package util
 
 import (
 	"bufio"
+	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
+
+	"github.com/garrychrstn/top-go/internal/repository/db"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 // LoadDotEnv loads KEY=VALUE pairs from path into the environment without
@@ -49,4 +54,43 @@ func LoadDotEnv(path string) error {
 		}
 	}
 	return sc.Err()
+}
+
+// InitiateService ensures an initial user exists. First searches for any user,
+// and if none found, creates user "admin" with password "admin" using HashPassword.
+func InitiateService(ctx context.Context, pool *pgxpool.Pool) error {
+	q := db.New(pool)
+
+	users, err := q.LisstUser(ctx)
+	if err != nil {
+		return fmt.Errorf("list users: %w", err)
+	}
+	if len(users) > 0 {
+		return nil
+	}
+
+	username := os.Getenv("INIT_USERNAME")
+	if username == "" {
+		username = "admin"
+	}
+	password := os.Getenv("INIT_PASSWORD")
+	if password == "" {
+		password = "admin"
+	}
+
+	encPassword, err := HashPassword(password)
+	if err != nil {
+		return fmt.Errorf("hash password: %w", err)
+	}
+
+	_, err = q.CreateUser(ctx, db.CreateUserParams{
+		Username: username,
+		Password: encPassword,
+	})
+	if err != nil {
+		return fmt.Errorf("create user: %w", err)
+	}
+
+	slog.Info("initialized user", "username", username)
+	return nil
 }

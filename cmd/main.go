@@ -81,6 +81,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if err := util.InitiateService(ctx, pool); err != nil {
+		slog.Error("initiate service", "error", err)
+		os.Exit(1)
+	}
+
 	// 3. Init repository, 4. init handler (inject repo).
 	handlers := []handler.Registrar{}
 
