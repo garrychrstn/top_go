@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/garrychrstn/go-v1/internal/types"
+	"github.com/garrychrstn/top-go/internal/types"
 )
 
 // WriteJSON writes v as a JSON response with the given status code.

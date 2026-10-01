@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"runtime/debug"
 
-	"github.com/garrychrstn/go-v1/internal/util"
+	"github.com/garrychrstn/top-go/internal/util"
 )
 
 // Recoverer catches panics in downstream handlers, logs the stack, and

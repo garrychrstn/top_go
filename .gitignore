@@ -7,3 +7,4 @@ bin/
 # Logs / editor noise
 *.log
 .DS_Store
+tmp

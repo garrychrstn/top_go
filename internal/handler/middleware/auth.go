@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/garrychrstn/go-v1/internal/util"
+	"github.com/garrychrstn/top-go/internal/util"
 )
 
 // RequireBearerToken guards routes with a static bearer token supplied via

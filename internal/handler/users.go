@@ -10,9 +10,9 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	"github.com/garrychrstn/go-v1/internal/repository"
-	"github.com/garrychrstn/go-v1/internal/types"
-	"github.com/garrychrstn/go-v1/internal/util"
+	"github.com/garrychrstn/top-go/internal/repository"
+	"github.com/garrychrstn/top-go/internal/types"
+	"github.com/garrychrstn/top-go/internal/util"
 )
 
 // UserHandler handles /users requests and calls the repository directly

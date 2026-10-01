@@ -10,8 +10,8 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/garrychrstn/go-v1/internal/repository/db"
-	"github.com/garrychrstn/go-v1/internal/types"
+	"github.com/garrychrstn/top-go/internal/repository/db"
+	"github.com/garrychrstn/top-go/internal/types"
 )
 
 // UserRepository is the persistence boundary used by handlers.

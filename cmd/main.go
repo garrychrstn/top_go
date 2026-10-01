@@ -20,10 +20,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/garrychrstn/go-v1/internal/database"
-	"github.com/garrychrstn/go-v1/internal/handler"
-	"github.com/garrychrstn/go-v1/internal/repository"
-	"github.com/garrychrstn/go-v1/internal/util"
+	"github.com/garrychrstn/top-go/internal/database"
+	"github.com/garrychrstn/top-go/internal/handler"
+	"github.com/garrychrstn/top-go/internal/repository"
+	"github.com/garrychrstn/top-go/internal/util"
 )
 
 type config struct {

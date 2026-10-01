@@ -1,4 +1,4 @@
-module github.com/garrychrstn/go-v1
+module github.com/garrychrstn/top-go
 
 go 1.26.2
 

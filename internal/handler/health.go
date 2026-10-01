@@ -3,7 +3,7 @@ package handler
 import (
 	"net/http"
 
-	"github.com/garrychrstn/go-v1/internal/util"
+	"github.com/garrychrstn/top-go/internal/util"
 )
 
 // Health reports service liveness.

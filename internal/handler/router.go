@@ -5,7 +5,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 
-	mw "github.com/garrychrstn/go-v1/internal/handler/middleware"
+	mw "github.com/garrychrstn/top-go/internal/handler/middleware"
 )
 
 // Registrar mounts a handler's routes on a router.
