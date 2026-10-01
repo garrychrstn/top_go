@@ -6,11 +6,39 @@ package db
 
 import (
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Customer struct {
+	ID          pgtype.UUID `json:"id"`
+	Name        string      `json:"name"`
+	PhoneNumber string      `json:"phone_number"`
+	Address     pgtype.Text `json:"address"`
+}
+
+type Item struct {
+	ID    pgtype.UUID    `json:"id"`
+	Name  string         `json:"name"`
+	Price pgtype.Numeric `json:"price"`
+}
+
+type TxRental struct {
+	ID         pgtype.UUID `json:"id"`
+	UserID     pgtype.UUID `json:"user_id"`
+	CustomerID pgtype.UUID `json:"customer_id"`
+	CreatedAt  time.Time   `json:"created_at"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+}
+
+type TxRentalItem struct {
+	RentalID pgtype.UUID `json:"rental_id"`
+	ItemID   pgtype.UUID `json:"item_id"`
+	Status   string      `json:"status"`
+}
+
 type User struct {
-	ID        int64     `json:"id"`
-	Name      string    `json:"name"`
-	Email     string    `json:"email"`
-	CreatedAt time.Time `json:"created_at"`
+	ID       pgtype.UUID `json:"id"`
+	Username string      `json:"username"`
+	Password string      `json:"password"`
 }
