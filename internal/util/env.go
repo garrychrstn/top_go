@@ -61,7 +61,7 @@ func LoadDotEnv(path string) error {
 func InitiateService(ctx context.Context, pool *pgxpool.Pool) error {
 	q := db.New(pool)
 
-	users, err := q.LisstUser(ctx)
+	users, err := q.UserList(ctx)
 	if err != nil {
 		return fmt.Errorf("list users: %w", err)
 	}
@@ -83,7 +83,7 @@ func InitiateService(ctx context.Context, pool *pgxpool.Pool) error {
 		return fmt.Errorf("hash password: %w", err)
 	}
 
-	_, err = q.CreateUser(ctx, db.CreateUserParams{
+	_, err = q.UserCreate(ctx, db.UserCreateParams{
 		Username: username,
 		Password: encPassword,
 	})

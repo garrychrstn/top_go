@@ -7,10 +7,12 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const userCreate = `-- name: UserCreate :one
-INSERT INTO USERS (username, password) VALUES ($1, $2) returning id, username, password
+insert into users (username, password) values ($1, $2) returning id, username, password
 `
 
 type UserCreateParams struct {
@@ -25,19 +27,19 @@ func (q *Queries) UserCreate(ctx context.Context, arg UserCreateParams) (User, e
 	return i, err
 }
 
-const userGetByEmail = `-- name: UserGetByEmail :one
-SELECT id, username, password FROM USERS WHERE username = $1
+const userGetByUsername = `-- name: UserGetByUsername :one
+select id, username, password from users where username = $1
 `
 
-func (q *Queries) UserGetByEmail(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRow(ctx, userGetByEmail, username)
+func (q *Queries) UserGetByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, userGetByUsername, username)
 	var i User
 	err := row.Scan(&i.ID, &i.Username, &i.Password)
 	return i, err
 }
 
 const userList = `-- name: UserList :many
-SELECT id, username, password FROM USERS
+select id, username, password from users
 `
 
 func (q *Queries) UserList(ctx context.Context) ([]User, error) {
@@ -58,4 +60,20 @@ func (q *Queries) UserList(ctx context.Context) ([]User, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const userPasswordReset = `-- name: UserPasswordReset :one
+update users set password = $1 where id = $2 returning id, username, password
+`
+
+type UserPasswordResetParams struct {
+	Password string    `json:"password"`
+	ID       uuid.UUID `json:"id"`
+}
+
+func (q *Queries) UserPasswordReset(ctx context.Context, arg UserPasswordResetParams) (User, error) {
+	row := q.db.QueryRow(ctx, userPasswordReset, arg.Password, arg.ID)
+	var i User
+	err := row.Scan(&i.ID, &i.Username, &i.Password)
+	return i, err
 }
